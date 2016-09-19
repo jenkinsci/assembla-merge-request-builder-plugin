@@ -98,5 +98,6 @@
   <properties>
     <!-- Baseline Jenkins version you use to build and test the plugin. Users must have this version or newer to run. -->
     <jenkins.version>1.580.1</jenkins.version>
+    <findbugs.failOnError>false</findbugs.failOnError>
   </properties>
 </project>
