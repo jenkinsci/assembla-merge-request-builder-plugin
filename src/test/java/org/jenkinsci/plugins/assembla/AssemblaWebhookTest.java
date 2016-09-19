@@ -6,6 +6,7 @@ import org.junit.*;
 
 import static org.junit.Assert.*;
 
+import org.jvnet.hudson.test.JenkinsRule;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.BufferedReader;
@@ -33,6 +34,9 @@ public class AssemblaWebhookTest {
 
     AssemblaWebhook webhook;
     BufferedReader br;
+
+    @Rule
+    public JenkinsRule jenkinsRule = new JenkinsRule();
 
     @Before
     public void setUp() throws Exception {
