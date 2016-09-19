@@ -116,7 +116,7 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
         values.put("assemblaTargetBranch", new StringParameterValue("assemblaTargetBranch", cause.getTargetBranch()));
 
         List<ParameterValue> listValues = new ArrayList<>(values.values());
-        return job.scheduleBuild2(0, cause, new ParametersAction(listValues));
+        return job.scheduleBuild2(0, cause, new SafeParametersAction(listValues));
     }
 
     public QueueTaskFuture<?> handlePush(AssemblaPushCause cause) {
@@ -126,7 +126,7 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
             Map<String, ParameterValue> values = getDefaultParameters(cause);
 
             List<ParameterValue> listValues = new ArrayList<>(values.values());
-            return job.scheduleBuild2(0, cause, new ParametersAction(listValues));
+            return job.scheduleBuild2(0, cause, new SafeParametersAction(listValues));
         }
 
         return null;
