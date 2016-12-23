@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class WebhookPayload {
     private static final Pattern mergeRequestIdPattern = Pattern.compile("Merge Request (\\d+)");
-    private static final Pattern wikiNamePattern = Pattern.compile("^git@git\\.assembla\\.com:([a-z0-9\\_-]+).*$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern wikiNamePattern = Pattern.compile("^git@git\\.assembla\\.com:(?:[a-z0-9\\_-]+[\\^/])?([a-z0-9\\_-]+).*$", Pattern.CASE_INSENSITIVE);
     private static final Logger LOGGER = Logger.getLogger(WebhookPayload.class.getName());
 
     private String space;
