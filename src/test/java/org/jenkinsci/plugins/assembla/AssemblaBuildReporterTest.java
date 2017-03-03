@@ -44,14 +44,11 @@ public class AssemblaBuildReporterTest {
         project = jenkinsRule.createFreeStyleProject("testJob");
         trigger = spy(AssemblaTestUtil.getTrigger());
         reporter = new AssemblaBuildReporter(trigger);
-        build = mock(AbstractBuild.class);
+        build = spy(project.scheduleBuild2(0, AssemblaTestUtil.getMergeRequestCause()).get());
 
         mr = mock(MergeRequest.class);
         mrVersion = mock(MergeRequestVersion.class);
         ticket = mock(Ticket.class);
-
-        given(build.getCause(any(Class.class))).willReturn(AssemblaTestUtil.getMergeRequestCause());
-        given(build.getProject()).willReturn(project);
 
         given(client.setConfig(anyString(), anyString(), anyString(), anyBoolean())).willCallRealMethod();
         given(client.getMergeRequest(anyString(), anyString(), anyInt())).willReturn(mr);
@@ -64,7 +61,7 @@ public class AssemblaBuildReporterTest {
         reporter.onStarted(build, mock(TaskListener.class));
         verify(build, times(1)).setDescription(anyString());
         verify(client, times(1)).createTicketComment(any(Ticket.class), anyString());
-        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), anyString());
+        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), eq("testJob #1 build started"));
     }
 
     @Test
@@ -72,7 +69,7 @@ public class AssemblaBuildReporterTest {
         given(build.getResult()).willReturn(Result.SUCCESS);
         reporter.onCompleted(build, mock(TaskListener.class));
         verify(client, times(1)).createTicketComment(eq(ticket), anyString());
-        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), anyString());
+        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), eq("testJob #1 build finished with status: SUCCESS"));
         verify(client, times(1)).upVoteMergeRequest(eq(mr), eq(mrVersion));
     }
 
@@ -81,7 +78,7 @@ public class AssemblaBuildReporterTest {
         given(build.getResult()).willReturn(Result.FAILURE);
         reporter.onCompleted(build, mock(TaskListener.class));
         verify(client, times(1)).createTicketComment(eq(ticket), anyString());
-        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), anyString());
+        verify(client, times(1)).commentMergeRequest(eq(mr), eq(mrVersion), eq("testJob #1 build finished with status: FAILURE"));
         verify(client, times(1)).downVoteMergeRequest(eq(mr), eq(mrVersion));
     }
 }

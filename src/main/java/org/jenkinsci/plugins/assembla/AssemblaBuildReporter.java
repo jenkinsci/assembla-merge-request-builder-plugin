@@ -11,6 +11,7 @@ import org.jenkinsci.plugins.assembla.api.models.MergeRequest;
 import org.jenkinsci.plugins.assembla.api.models.MergeRequestVersion;
 import org.jenkinsci.plugins.assembla.api.models.Ticket;
 import org.jenkinsci.plugins.assembla.cause.AssemblaMergeRequestCause;
+import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -155,9 +156,7 @@ public class AssemblaBuildReporter {
         String returnString = inputString;
         if (build != null && inputString != null) {
             try {
-                Map<String, String> messageEnvVars = getEnvVars(build, listener);
-
-                returnString = Util.replaceMacro(inputString, messageEnvVars);
+                returnString = TokenMacro.expandAll(build, listener, inputString);
 
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Couldn't replace macros in message: ", e);

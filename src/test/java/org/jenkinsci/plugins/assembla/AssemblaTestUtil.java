@@ -76,7 +76,7 @@ public class AssemblaTestUtil {
     }
 
     public static AssemblaBuildTrigger getTrigger() throws Exception {
-        return new AssemblaBuildTrigger("space-name", "git", true, true, true, true, true, "master", "", "", "");
+        return new AssemblaBuildTrigger("space-name", "git", true, true, true, true, true, "master", "", "$jobName #$BUILD_NUMBER build started", "$jobName #$BUILD_NUMBER build finished with status: $buildStatus");
     }
 
     public static AssemblaPushCause getPushCause() {
