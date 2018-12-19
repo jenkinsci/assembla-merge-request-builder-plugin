@@ -12,6 +12,7 @@ public class AssemblaMergeRequestCause extends AssemblaCause {
     private final Integer mergeRequestId;
     private final String targetBranch;
     private final String targetRepositoryUrl;
+    private final String action;
 
     public Integer getMergeRequestId() {
         return mergeRequestId;
@@ -31,7 +32,8 @@ public class AssemblaMergeRequestCause extends AssemblaCause {
                                      String description,
                                      String sourceSpaceId,
                                      String title,
-                                     String author) {
+                                     String author,
+                                     String action) {
         super(
             sourceRepositoryUrl,
             sourceRepositoryName,
@@ -46,7 +48,7 @@ public class AssemblaMergeRequestCause extends AssemblaCause {
         this.targetBranch = targetBranch;
         this.mergeRequestId = mergeRequestId;
         this.targetRepositoryUrl = targetRepositoryUrl;
-
+        this.action = action;
     }
 
     public String getAbbreviatedTitle() {
@@ -55,6 +57,22 @@ public class AssemblaMergeRequestCause extends AssemblaCause {
 
     public String getTargetRepositoryUrl() {
         return targetRepositoryUrl;
+    }
+
+    public Boolean isCreated() {
+        return action.equals("created");
+    }
+
+    public Boolean isUpdated() {
+        return action.equals("updated") || action.equals("reopened");
+    }
+
+    public Boolean isMerged() {
+        return action.equals("merged");
+    }
+
+    public Boolean isIgnored() {
+        return action.equals("ignored");
     }
 
     @Override
@@ -88,7 +106,8 @@ public class AssemblaMergeRequestCause extends AssemblaCause {
                 mr.getDescription(),
                 mr.getTargetSpaceId(),
                 mr.getTitle(),
-                payload.getAuthor()
+                payload.getAuthor(),
+                payload.getAction()
         );
     }
 

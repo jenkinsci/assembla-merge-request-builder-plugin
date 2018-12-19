@@ -132,4 +132,36 @@ public class WebhookPayloadTest {
         );
         assertTrue(reopenPayload.shouldTriggerBuild());
     }
+
+    @Test
+    public void testMergedShouldTriggerBuild() throws Exception {
+        WebhookPayload payload = new WebhookPayload(
+                "pavel test",
+                "merged",
+                "Merge request",
+                "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
+                "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
+                "pavel.d",
+                "master",
+                "git@git.assembla.com:pavel-test.2.git",
+                "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
+        );
+        assertTrue(payload.shouldTriggerBuild());
+    }
+
+    @Test
+    public void testIgnoredShouldTriggerBuild() throws Exception {
+        WebhookPayload payload = new WebhookPayload(
+                "pavel test",
+                "ignored",
+                "Merge request",
+                "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
+                "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
+                "pavel.d",
+                "master",
+                "git@git.assembla.com:pavel-test.2.git",
+                "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
+        );
+        assertTrue(payload.shouldTriggerBuild());
+    }
 }

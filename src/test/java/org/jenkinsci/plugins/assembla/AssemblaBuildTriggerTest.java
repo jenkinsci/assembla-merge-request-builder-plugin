@@ -32,14 +32,12 @@ public class AssemblaBuildTriggerTest {
     public JenkinsRule jenkinsRule = new JenkinsRule();
 
     AssemblaWebhook webhook;
-    AssemblaBuildTrigger trigger;
     FreeStyleProject project;
 
     @Before
     public void setUp() throws Exception {
         project = jenkinsRule.createFreeStyleProject("testJob");
         AssemblaTestUtil.setupAssemblaTriggerDescriptor();
-        trigger = spy(AssemblaTestUtil.getTrigger());
 
         webhook = spy(new AssemblaWebhook());
         AssemblaBuildTrigger.setAssembla(client);
@@ -51,6 +49,7 @@ public class AssemblaBuildTriggerTest {
 
     @Test
     public void testHandlePush() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getTrigger());
         project = spy(project);
         trigger.start(project, true);
         AssemblaPushCause pushCause = AssemblaTestUtil.getPushCause();
@@ -60,6 +59,7 @@ public class AssemblaBuildTriggerTest {
 
     @Test
     public void testHandleMergeRequest() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getTrigger());
         project = spy(project);
         trigger.start(project, true);
         AssemblaMergeRequestCause mrCause = AssemblaTestUtil.getMergeRequestCause();
@@ -69,6 +69,7 @@ public class AssemblaBuildTriggerTest {
 
     @Test
     public void testHandleMergeRequestWithoutDescription() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getTrigger());
         project = spy(project);
         trigger.start(project, true);
         AssemblaMergeRequestCause mrCause = AssemblaTestUtil.getMergeRequestCauseWithoutDescription();
@@ -81,13 +82,47 @@ public class AssemblaBuildTriggerTest {
     }
 
     @Test
+    public void testHandleMergeRequestMerged() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getMRMergedTrigger());
+        project = spy(project);
+        trigger.start(project, true);
+
+        AssemblaMergeRequestCause mrCause1 = AssemblaTestUtil.getMergeRequestCause("merged");
+        trigger.handleMergeRequest(mrCause1);
+        AssemblaMergeRequestCause mrCause2 = AssemblaTestUtil.getMergeRequestCause("ignored");
+        trigger.handleMergeRequest(mrCause2);
+        AssemblaMergeRequestCause mrCause3 = AssemblaTestUtil.getMergeRequestCause("created");
+        trigger.handleMergeRequest(mrCause3);
+
+        verify(project, times(1)).scheduleBuild2(eq(0), eq(mrCause1), any(ParametersAction.class));
+    }
+
+    @Test
+    public void testHandleMergeRequestIgnored() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getMRIgnoredTrigger());
+        project = spy(project);
+        trigger.start(project, true);
+
+        AssemblaMergeRequestCause mrCause1 = AssemblaTestUtil.getMergeRequestCause("merged");
+        trigger.handleMergeRequest(mrCause1);
+        AssemblaMergeRequestCause mrCause2 = AssemblaTestUtil.getMergeRequestCause("ignored");
+        trigger.handleMergeRequest(mrCause2);
+        AssemblaMergeRequestCause mrCause3 = AssemblaTestUtil.getMergeRequestCause("created");
+        trigger.handleMergeRequest(mrCause3);
+
+        verify(project, times(1)).scheduleBuild2(eq(0), eq(mrCause2), any(ParametersAction.class));
+    }
+
+    @Test
     public void testGetDescriptor() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getTrigger());
         assertTrue(trigger.getDescriptor() != null);
     }
 
 
     @Test
     public void testAddsRepoTriggerOnStart() throws Exception {
+        AssemblaBuildTrigger trigger = spy(AssemblaTestUtil.getTrigger());
         trigger.start(project, true);
         Set<AbstractProject<?, ?>> projects = trigger.getDescriptor()
                 .getRepoJobs(trigger.getSpaceName(), trigger.getRepoName());

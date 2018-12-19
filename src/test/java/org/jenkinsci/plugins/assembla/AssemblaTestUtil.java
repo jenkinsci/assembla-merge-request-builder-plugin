@@ -75,8 +75,42 @@ public class AssemblaTestUtil {
 
     }
 
+    public static AssemblaBuildTrigger getMRMergedTrigger() throws Exception {
+        return new AssemblaBuildTrigger(
+                "space-name",
+                "git",
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                "master",
+                "",
+                "$jobName #$BUILD_NUMBER build started",
+                "$jobName #$BUILD_NUMBER build finished with status: $buildStatus");
+    }
+
+    public static AssemblaBuildTrigger getMRIgnoredTrigger() throws Exception {
+        return new AssemblaBuildTrigger(
+                "space-name",
+                "git",
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                "master",
+                "",
+                "$jobName #$BUILD_NUMBER build started",
+                "$jobName #$BUILD_NUMBER build finished with status: $buildStatus");
+    }
+
     public static AssemblaBuildTrigger getTrigger() throws Exception {
-        return new AssemblaBuildTrigger("space-name", "git", true, true, true, true, true, "master", "", "$jobName #$BUILD_NUMBER build started", "$jobName #$BUILD_NUMBER build finished with status: $buildStatus");
+        return new AssemblaBuildTrigger("space-name", "git", true, true, true, true, false, false, true, "master", "", "$jobName #$BUILD_NUMBER build started", "$jobName #$BUILD_NUMBER build finished with status: $buildStatus");
     }
 
     public static AssemblaPushCause getPushCause() {
@@ -93,6 +127,10 @@ public class AssemblaTestUtil {
     }
 
     public static AssemblaMergeRequestCause getMergeRequestCause() {
+        return getMergeRequestCause("created");
+    }
+
+    public static AssemblaMergeRequestCause getMergeRequestCause(String action) {
         return new AssemblaMergeRequestCause(
             12345,
             "git@git.assembla.com:pavel-fork.git",
@@ -104,7 +142,8 @@ public class AssemblaTestUtil {
             "Description",
             "12345",
             "Redirect all old catalog pages to assembla.com/home",
-            "Author"
+            "Author",
+            action
         );
     }
     
@@ -120,7 +159,8 @@ public class AssemblaTestUtil {
             null,
             "12345",
             "Redirect all old catalog pages to assembla.com/home",
-            "Author"
+            "Author",
+            "created"
         );
     }
 
