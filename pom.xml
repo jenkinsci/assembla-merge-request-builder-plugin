@@ -75,7 +75,7 @@
   </parent>
 
   <artifactId>assembla-merge-request-builder</artifactId>
-  <version>1.1.12</version>
+  <version>1.1.13-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Assembla merge request builder</name>
@@ -98,7 +98,7 @@
     <connection>scm:git:ssh://github.com/jenkinsci/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}.git</developerConnection>
     <url>http://github.com/jenkinsci/${project.artifactId}</url>
-    <tag>assembla-merge-request-builder-1.1.12</tag>
+    <tag>HEAD</tag>
   </scm>
   <properties>
     <!-- Baseline Jenkins version you use to build and test the plugin. Users must have this version or newer to run. -->
