@@ -256,9 +256,11 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
     private Boolean shouldMergeRequestTriggerBuild(AssemblaMergeRequestCause cause) {
         if ((cause.isCreated() || cause.isUpdated()) && buildOnMergeRequestEnabled) {
             return true;
-        } else if (cause.isMerged() && buildOnMergeRequestMergedEnabled) {
+        }
+        if (cause.isMerged() && buildOnMergeRequestMergedEnabled) {
             return true;
-        } else if (cause.isIgnored() && buildOnMergeRequestIgnoredEnabled) {
+        }
+        if (cause.isIgnored() && buildOnMergeRequestIgnoredEnabled) {
             return true;
         }
 
