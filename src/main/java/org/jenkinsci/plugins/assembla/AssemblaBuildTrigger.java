@@ -51,6 +51,9 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
     private boolean ticketCommentsEnabled;
     private boolean notifyOnStartEnabled;
 
+    private boolean buildOnMergeRequestMergedEnabled;
+    private boolean buildOnMergeRequestIgnoredEnabled;
+
     private boolean triggerOnPushEnabled;
 
     private String branchesToBuild;
@@ -63,6 +66,8 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
                                 boolean mergeRequestCommentsEnabled,
                                 boolean ticketCommentsEnabled,
                                 boolean notifyOnStartEnabled,
+                                boolean buildOnMergeRequestMergedEnabled,
+                                boolean buildOnMergeRequestIgnoredEnabled,
                                 boolean triggerOnPushEnabled,
                                 String branchesToBuild,
                                 String buildDescriptionTemplate,
@@ -77,6 +82,8 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
         this.mergeRequestCommentsEnabled = mergeRequestCommentsEnabled;
         this.ticketCommentsEnabled = ticketCommentsEnabled;
         this.notifyOnStartEnabled = notifyOnStartEnabled;
+        this.buildOnMergeRequestMergedEnabled = buildOnMergeRequestMergedEnabled;
+        this.buildOnMergeRequestIgnoredEnabled = buildOnMergeRequestIgnoredEnabled;
         this.triggerOnPushEnabled = triggerOnPushEnabled;
         this.branchesToBuild = branchesToBuild.trim();
     }
@@ -105,9 +112,10 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
     }
 
     public QueueTaskFuture<?> handleMergeRequest(AssemblaMergeRequestCause cause) {
-        if (!buildOnMergeRequestEnabled) {
+        if (!shouldMergeRequestTriggerBuild(cause)) {
             return null;
         }
+
         Map<String, ParameterValue> values = getDefaultParameters(cause);
 
         values.put("assemblaMergeRequestId", new StringParameterValue("assemblaMergeRequestId", String.valueOf(cause.getMergeRequestId())));
@@ -243,6 +251,20 @@ public class AssemblaBuildTrigger extends Trigger<AbstractProject<?, ?>> {
         }
 
         return values;
+    }
+
+    private Boolean shouldMergeRequestTriggerBuild(AssemblaMergeRequestCause cause) {
+        if ((cause.isCreated() || cause.isUpdated()) && buildOnMergeRequestEnabled) {
+            return true;
+        }
+        if (cause.isMerged() && buildOnMergeRequestMergedEnabled) {
+            return true;
+        }
+        if (cause.isIgnored() && buildOnMergeRequestIgnoredEnabled) {
+            return true;
+        }
+
+        return false;
     }
 
     public static final class AssemblaBuildTriggerDescriptor extends TriggerDescriptor {

@@ -39,6 +39,17 @@
           <f:checkbox />
         </f:entry>
     </f:optionalBlock>
+
+    <f:entry title="Build when merge request is merged" field="buildOnMergeRequestMergedEnabled"
+      description="Trigger build after merge request is merged">
+      <f:checkbox />
+    </f:entry>
+
+    <f:entry title="Build when merge request is ignored" field="buildOnMergeRequestIgnoredEnabled"
+      description="Trigger build after merge request is ignored">
+      <f:checkbox />
+    </f:entry>
+
     <f:optionalBlock field="triggerOnPushEnabled" title="Build on push"
       description="Build when change is pushed to Assembla additionally to merge request trigger" inline="true">
       <f:entry field="branchesToBuild" title="Branches to build"
