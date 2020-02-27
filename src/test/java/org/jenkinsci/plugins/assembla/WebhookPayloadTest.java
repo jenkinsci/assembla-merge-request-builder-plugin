@@ -14,72 +14,117 @@ import static org.junit.Assert.*;
 public class WebhookPayloadTest {
 
     WebhookPayload payload;
+    private static final String REPO_URL = "git@git.assembla.com:pavel-test.2.git";
 
-    @Before
-    public void setUp() throws Exception {
-        payload = new WebhookPayload(
+    private WebhookPayload setupPayload(String wikiName, String mrStatus) throws Exception {
+        return new WebhookPayload(
             "pavel test",
-            "updated",
+            mrStatus,
             "Merge request",
             "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
             "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
             "pavel.d",
             "master",
-            "git@git.assembla.com:pavel-test.2.git",
+            wikiName,
             "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
         );
     }
 
-    @Test
-    public void testCaretSpaceWikiName() throws Exception {
-        payload = new WebhookPayload(
-            "pavel test",
-            "updated",
-            "Merge request",
-            "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-            "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-            "pavel.d",
-            "master",
-            "git@git.assembla.com:pavelportfolio^pavel-test.2.git",
-            "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
+    private WebhookPayload setupPayload(String wikiName) throws Exception {
+        return setupPayload(wikiName, "updated");
+    }
 
+    private WebhookPayload setupPayload() throws Exception {
+        return setupPayload(REPO_URL, "updated");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        payload = setupPayload();
+    }
+
+    /**
+     * Possible wiki-name examples:
+     *
+     * git@git.assembla.com:qwerty^master-space.git
+     * git@git.assembla.com:tester2/tester2-first-space.git
+     * git@git.assembla.com:tester1-spaces-two.2.git
+     *
+     * http://git.assembla.com/vf-por-snippet
+     *
+     * https://subversion.assembla.com/svn/gpcgames^apoc-auto
+     * https://subversion.assembla.com/svn/clubpages
+     * https://subversion.assembla.com/svn/paw5.rower
+     *
+     * http://perforce.assembla.com/breakout:11601
+     * http://perforce-us-east.assembla.com/assembla-inc/damian-space2:12405
+     * http://perforce.assembla.com/afconsult^afconsult_ue4.ue4test:11271
+     */
+    @Test
+    public void testCaretGitWikiName() throws Exception {
+        payload = setupPayload("git@git.assembla.com:pavelportfolio^pavel-test.2.git");
         assertEquals(payload.getSpaceWikiName(), "pavel-test");
     }
 
     @Test
-    public void testSlashSpaceWikiName() throws Exception {
-        payload = new WebhookPayload(
-            "pavel test",
-            "updated",
-            "Merge request",
-            "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-            "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-            "pavel.d",
-            "master",
-            "git@git.assembla.com:pavelportfolio/pavel-test.2.git",
-            "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
-
+    public void testSlashedGitWikiName() throws Exception {
+        payload = setupPayload("git@git.assembla.com:pavelportfolio/pavel-test.2.git");
         assertEquals(payload.getSpaceWikiName(), "pavel-test");
     }
 
 
     @Test
     public void testNamespacedSpaceWikiName() throws Exception {
-        payload = new WebhookPayload(
-            "pavel test",
-            "updated",
-            "Merge request",
-            "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-            "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-            "pavel.d",
-            "master",
-            "git@eu-git.assembla.com:pavelportfolio/pavel-test.2.git",
-            "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
-
+        payload = setupPayload("git@eu-git.assembla.com:pavelportfolio/pavel-test.2.git");
         assertEquals(payload.getSpaceWikiName(), "pavel-test");
+    }
+
+    @Test
+    public void testHttpGitWikiName() throws Exception {
+        payload = setupPayload("http://git.assembla.com/vf-por-snippet");
+        assertEquals(payload.getSpaceWikiName(), "vf-por-snippet");
+    }
+
+    @Test
+    public void testSvnWikiName() throws Exception {
+        payload = setupPayload("https://subversion.assembla.com/svn/clubpages");
+        assertEquals(payload.getSpaceWikiName(), "clubpages");
+    }
+
+    @Test
+    public void testCaretSvnWikiNam() throws Exception {
+        payload = setupPayload("https://subversion.assembla.com/svn/gpcgames^apoc-auto");
+        assertEquals(payload.getSpaceWikiName(), "apoc-auto");
+    }
+
+    @Test
+    public void testNamespacedNameSvnWikiName() throws Exception {
+        payload = setupPayload("https://subversion.assembla.com/svn/paw5.rower");
+        assertEquals(payload.getSpaceWikiName(), "paw5");
+    }
+
+    @Test
+    public void testP4WikiName() throws Exception {
+        payload = setupPayload("http://perforce.assembla.com/breakout:11601");
+        assertEquals(payload.getSpaceWikiName(), "breakout");
+    }
+
+    @Test
+    public void testCaretP4WikiName() throws Exception {
+        payload = setupPayload("http://perforce.assembla.com/afconsult^afconsult_ue4:11271");
+        assertEquals(payload.getSpaceWikiName(), "afconsult_ue4");
+    }
+
+    @Test
+    public void testNamespaceP4WikiName() throws Exception {
+        payload = setupPayload("http://perforce.assembla.com/afconsult^afconsult_ue4.ue4test:11271");
+        assertEquals(payload.getSpaceWikiName(), "afconsult_ue4");
+    }
+
+    @Test
+    public void testSlashedP4WikiName() throws Exception {
+        payload = setupPayload("http://perforce-us-east.assembla.com/assembla-inc/damian-space2:12405");
+        assertEquals(payload.getSpaceWikiName(), "damian-space2");
     }
 
     @Test
@@ -119,49 +164,19 @@ public class WebhookPayloadTest {
 
     @Test
     public void testReopenShouldTriggerBuild() throws Exception {
-        WebhookPayload reopenPayload = new WebhookPayload(
-                "pavel test",
-                "reopened",
-                "Merge request",
-                "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-                "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-                "pavel.d",
-                "master",
-                "git@git.assembla.com:pavel-test.2.git",
-                "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
-        assertTrue(reopenPayload.shouldTriggerBuild());
+        WebhookPayload payload = setupPayload(REPO_URL, "reopened");
+        assertTrue(payload.shouldTriggerBuild());
     }
 
     @Test
     public void testMergedShouldTriggerBuild() throws Exception {
-        WebhookPayload payload = new WebhookPayload(
-                "pavel test",
-                "merged",
-                "Merge request",
-                "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-                "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-                "pavel.d",
-                "master",
-                "git@git.assembla.com:pavel-test.2.git",
-                "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
+        WebhookPayload payload = setupPayload(REPO_URL, "merged");
         assertTrue(payload.shouldTriggerBuild());
     }
 
     @Test
     public void testIgnoredShouldTriggerBuild() throws Exception {
-        WebhookPayload payload = new WebhookPayload(
-                "pavel test",
-                "ignored",
-                "Merge request",
-                "Merge Request 2945043: Redirect all old catalog pages to assembla.com/home",
-                "Pavel Dotsulenko (pavel.d) updated Merge Request 2945043 (6): Redirect all old catalog pages to assembla.com/home [+0] [-0]\\n\\n    New Version (6) Created\\n",
-                "pavel.d",
-                "master",
-                "git@git.assembla.com:pavel-test.2.git",
-                "276dc190d87eff3d28fdfad2d1e6a08a672efe13"
-        );
+        WebhookPayload payload = setupPayload(REPO_URL, "ignored");
         assertTrue(payload.shouldTriggerBuild());
     }
 }
